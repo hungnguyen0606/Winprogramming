@@ -1,0 +1,4 @@
+LIBRARY
+EXPORTS
+	setHook @1
+	unHook @2

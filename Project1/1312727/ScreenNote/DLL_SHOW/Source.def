@@ -1,0 +1,5 @@
+LIBRARY
+EXPORTS
+	showAllWindow @1
+	setHook @2
+	unHook @3
