@@ -260,12 +260,35 @@ INT_PTR CALLBACK About(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam)
 	return (INT_PTR)FALSE;
 }
 
+void convertToBitmap(HWND hWnd, HICON src, HBITMAP& dest)
+{
+	HDC hdc = GetDC(hWnd);
+	HDC memDC = CreateCompatibleDC(hdc);
+	BITMAP bm;
+	
+	ICONINFO pinfo;
+	GetIconInfo(src, &pinfo);
+	GetObject(pinfo.hbmMask, sizeof(BITMAP), &bm);
+
+	HBITMAP newbm = CreateCompatibleBitmap(hdc, bm.bmWidth, bm.bmHeight);
+	ReleaseDC(hWnd, hdc);
+	HBITMAP hOldbmp = (HBITMAP)SelectObject(memDC, newbm);
+	
+	DrawIcon(memDC, 0, 0, src);
+
+	if (dest != NULL)
+		DeleteObject(dest);
+
+	dest = (HBITMAP)SelectObject(memDC, hOldbmp);
+
+	DeleteDC(memDC);
+}
 void LoadFileBitmap(HWND hWnd, HBITMAP& img)
 {
-	if (img != NULL)
-		DeleteObject(img);
+	HBITMAP old = img;
+
 	OPENFILENAME ofn; // CTDL dùng cho dialog open
-	TCHAR szFile[5000];
+	TCHAR szFile[5000], cusFilter[100];
 	TCHAR szFilter[] = L"BMP file\0*.bmp\0Icon file\0*.ico\0\0";
 	szFile[0] = '\0';
 	// Khởi tạo struct
@@ -277,16 +300,27 @@ void LoadFileBitmap(HWND hWnd, HBITMAP& img)
 	ofn.lpstrFile = szFile; // chuỗi tên file trả về
 	ofn.nMaxFile = sizeof(szFile);
 	ofn.Flags = OFN_PATHMUSTEXIST | OFN_FILEMUSTEXIST;
+	ofn.lpstrCustomFilter = cusFilter;
 	BOOL a;
 	a = GetOpenFileName(&ofn);
 	
 	if (a) {
-		HANDLE timg = LoadImage(hInst, szFile, IMAGE_BITMAP, 0, 0, LR_LOADFROMFILE);
-		img = (HBITMAP)timg;
+		BITMAP t;
+		
+		img = (HBITMAP)LoadImage(hInst, szFile, IMAGE_BITMAP/*IMAGE_ICON*/, 0, 0, LR_LOADFROMFILE);
+		if (img == NULL)
+		{
+			HANDLE ticon = LoadImage(hInst, szFile, IMAGE_ICON, 0, 0, LR_LOADFROMFILE);
+			convertToBitmap(hWnd, (HICON)ticon, img);
+		}
+		
+		
+		
 	}
 	
 	
-
+	if (old != NULL)
+		DeleteObject(old);
 	InvalidateRect(hWnd, 0, TRUE);
 	UpdateWindow(hWnd);
 }
