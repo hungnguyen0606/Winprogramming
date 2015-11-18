@@ -1,0 +1,253 @@
+84
+Eating
+(example)
+10
+Housing (fee, bill, ...)
+(example)
+10
+Service (intenet, phone...)
+(example)
+10
+Supplies (soaf, ...)
+(example)
+10
+Transportation (bus, gas, taxi...)
+(example)
+10
+Vehicles (fuel, maintenance...)
+(example)
+20
+Transportation (bus, gas, taxi...)
+(example)
+10
+Eating
+(example)
+10
+Housing (fee, bill, ...)
+(example)
+10
+Housing (fee, bill, ...)
+(example)
+10
+Housing (fee, bill, ...)
+(example)
+10
+Housing (fee, bill, ...)
+(example)
+10
+Service (intenet, phone...)
+(example)
+10
+Service (intenet, phone...)
+(example)
+10
+Service (intenet, phone...)
+(example)
+10
+Housing (fee, bill, ...)
+(example)
+10
+Housing (fee, bill, ...)
+(example)
+10
+Housing (fee, bill, ...)
+(example)
+10
+Transportation (bus, gas, taxi...)
+(example)
+10
+Transportation (bus, gas, taxi...)
+(example)
+10
+Transportation (bus, gas, taxi...)
+(example)
+10
+Transportation (bus, gas, taxi...)
+(example)
+10
+Transportation (bus, gas, taxi...)
+(example)
+10
+Transportation (bus, gas, taxi...)
+(example)
+10
+Housing (fee, bill, ...)
+(example)
+10
+Housing (fee, bill, ...)
+(example)
+10
+Housing (fee, bill, ...)
+(example)
+10
+Housing (fee, bill, ...)
+(example)
+10
+Housing (fee, bill, ...)
+(example)
+10
+Housing (fee, bill, ...)
+(example)
+10
+Housing (fee, bill, ...)
+(example)
+10
+Housing (fee, bill, ...)
+(example)
+10
+Transportation (bus, gas, taxi...)
+(example)
+10
+Transportation (bus, gas, taxi...)
+(example)
+10
+Transportation (bus, gas, taxi...)
+(example)
+10
+Transportation (bus, gas, taxi...)
+(example)
+10
+Transportation (bus, gas, taxi...)
+(example)
+10
+Vehicles (fuel, maintenance...)
+(example)
+10
+Vehicles (fuel, maintenance...)
+(example)
+10
+Vehicles (fuel, maintenance...)
+(example)
+10
+Vehicles (fuel, maintenance...)
+(example)
+10
+Vehicles (fuel, maintenance...)
+(example)
+10
+Vehicles (fuel, maintenance...)
+(example)
+10
+Vehicles (fuel, maintenance...)
+(example)
+10
+Vehicles (fuel, maintenance...)
+(example)
+10
+Vehicles (fuel, maintenance...)
+(example)
+10
+Vehicles (fuel, maintenance...)
+(example)
+10
+Housing (fee, bill, ...)
+(example)
+10
+Housing (fee, bill, ...)
+(example)
+10
+Housing (fee, bill, ...)
+(example)
+10
+Housing (fee, bill, ...)
+(example)
+10
+Housing (fee, bill, ...)
+(example)
+10
+Housing (fee, bill, ...)
+(example)
+10
+Housing (fee, bill, ...)
+(example)
+10
+Service (intenet, phone...)
+(example)
+10
+Service (intenet, phone...)
+(example)
+10
+Service (intenet, phone...)
+(example)
+10
+Service (intenet, phone...)
+(example)
+10
+Service (intenet, phone...)
+(example)
+10
+Service (intenet, phone...)
+(example)
+10
+Service (intenet, phone...)
+(example)
+10
+Service (intenet, phone...)
+(example)
+10
+Service (intenet, phone...)
+(example)
+10
+Service (intenet, phone...)
+(example)
+10
+Service (intenet, phone...)
+(example)
+10
+Eating
+(example)
+10
+Eating
+(example)
+10
+Eating
+(example)
+10
+Eating
+(example)
+10
+Eating
+(example)
+10
+Eating
+(example)
+10
+Eating
+(example)
+10
+Service (intenet, phone...)
+(example)
+10
+Service (intenet, phone...)
+(example)
+10
+Service (intenet, phone...)
+(example)
+10
+Service (intenet, phone...)
+(example)
+10
+Service (intenet, phone...)
+(example)
+10
+Service (intenet, phone...)
+(example)
+10
+Service (intenet, phone...)
+(example)
+10
+Service (intenet, phone...)
+(example)
+10
+Service (intenet, phone...)
+(example)
+10
+Service (intenet, phone...)
+(example)
+10
+Service (intenet, phone...)
+(example)
+10
+Service (intenet, phone...)
+(example)
+10
