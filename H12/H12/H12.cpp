@@ -152,7 +152,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 		
 			InvalidateRect(hWnd, 0, TRUE);
 			UpdateWindow(hWnd);
-			pasteAnsiText(hWnd);
+			
 			hdc = GetDC(hWnd);
 			char* t = pasteAnsiText(hWnd);
 			if (t == NULL)
