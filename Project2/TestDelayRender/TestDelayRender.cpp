@@ -242,13 +242,17 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 			DeleteDC(memDC);
 			ReleaseDC(hWnd, hdc);
 
+			//int gg = sizeof(BITMAP);
 			if (temp != NULL)
 			{
 				
 				OpenClipboard(hWnd);
 				EmptyClipboard();
+				
+
 				SetClipboardData(CF_BITMAP, NULL);
 				CloseClipboard();
+				
 				currentBitmap = temp;
 				MessageBox(hWnd, L"The Image has been copied to clipboard.", L"Copy Successfully", MB_OK);
 			}
@@ -348,8 +352,9 @@ void onRenderFormat(HWND hWnd, WPARAM wParam, HBITMAP currentBitmap)
 	{
 		HBITMAP newBitmap;
 		newBitmap = (HBITMAP) CopyImage(currentBitmap, IMAGE_BITMAP, 0, 0, LR_DEFAULTSIZE);
-		CopyImage(currentBitmap, IMAGE_BITMAP, 0, 0, LR_DEFAULTSIZE);
 		SetClipboardData(CF_BITMAP, newBitmap);
+		//DeleteObject(newBitmap);
+		
 	}
 }
 
