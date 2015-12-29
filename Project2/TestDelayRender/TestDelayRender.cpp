@@ -360,8 +360,11 @@ void onRenderFormat(HWND hWnd, WPARAM wParam, HBITMAP currentBitmap)
 
 void onRenderAllFormat(HWND hWnd, WPARAM wParam, HBITMAP currentBitmap)
 {
+	HBITMAP temp;
+	temp = (HBITMAP) CopyImage(currentBitmap, IMAGE_BITMAP, 0, 0, LR_DEFAULTSIZE);
 	OpenClipboard(hWnd);
 	EmptyClipboard();
-	onRenderFormat(hWnd, wParam, currentBitmap);
+	onRenderFormat(hWnd, CF_BITMAP, temp);
 	CloseClipboard();
+	DeleteObject(temp);
 }

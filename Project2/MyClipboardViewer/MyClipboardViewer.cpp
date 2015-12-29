@@ -288,11 +288,12 @@ int onCreate(HWND hWnd, HWND& hWndNextViewer)
 int onDrawClipboard(HWND hWnd, HWND hWndNextViewer, ClipData& dat)
 {
 	
-	if (hWndNextViewer != NULL)
-		SendMessage(hWndNextViewer, WM_DRAWCLIPBOARD, 0, 0);
+	
 	updateClipboardData(hWnd, dat);
 	InvalidateRect(hWnd, 0, TRUE);
 	UpdateWindow(hWnd);
+	if (hWndNextViewer != NULL)
+		SendMessage(hWndNextViewer, WM_DRAWCLIPBOARD, 0, 0);
 	return 0;
 }
 

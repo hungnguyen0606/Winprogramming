@@ -110,7 +110,7 @@ BOOL InitInstance(HINSTANCE hInstance, int nCmdShow)
       return FALSE;
    }
 
-   //ShowWindow(hWnd, nCmdShow);
+   ShowWindow(hWnd, nCmdShow);
    UpdateWindow(hWnd);
 
    return TRUE;
@@ -131,7 +131,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 	int wmId, wmEvent;
 	PAINTSTRUCT ps;
 	HDC hdc;
-
+	static HWND mci = NULL;
 	switch (message)
 	{
 	case WM_COMMAND:
@@ -152,8 +152,10 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 		break;
 	case WM_CREATE:
 	{
-		DialogBox(hInst, MAKEINTRESOURCE(IDD_MEDIA), hWnd, MediaProc);
-		PostQuitMessage(0);
+		mci = MCIWndCreate(hWnd, hInst, NULL, NULL);
+		
+		//DialogBox(hInst, MAKEINTRESOURCE(IDD_MEDIA), hWnd, MediaProc);
+		//PostQuitMessage(0);
 		//ShowWindow(hWnd, false);
 		break;
 	}
@@ -163,6 +165,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 		EndPaint(hWnd, &ps);
 		break;
 	case WM_DESTROY:
+		MCIWndDestroy(mci);
 		PostQuitMessage(0);
 		break;
 	default:
@@ -204,7 +207,7 @@ INT_PTR CALLBACK MediaProc(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam
 	{
 	case WM_INITDIALOG:
 	{
-		media = MCIWndCreate(hDlg, hInst, MCIWNDF_SHOWALL |MCIWNDF_NOPLAYBAR, NULL);
+		media = MCIWndCreate(hDlg, hInst, NULL , NULL);
 		return (INT_PTR)TRUE;
 	}
 
