@@ -408,6 +408,7 @@ int getNumThread(HWND hDlg)
 }
 void copyTo(LPVOID dat)
 {
+	
 	data &mdat = *((data*)dat);
 	FILE *s, *d;
 	HDC dc = GetDC(global);
