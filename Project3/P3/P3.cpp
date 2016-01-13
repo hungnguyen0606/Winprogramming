@@ -44,6 +44,7 @@ public:
 
 	bool isOut()
 	{
+		return pos.first < -4 || pos.second < -3 || pos.first > 4 || pos.second > 3;
 		return false;
 	}
 
@@ -116,7 +117,8 @@ void test(LPVOID para);
 
 void onStart(LPVOID para);
 RECT calRect(RECT wndRect, pair<int, int> pos);
-#define WM_MYDRAW WM_USER+1
+#define WM_MYDRAW (WM_USER+1)
+#define WM_MYEND (WM_MYDRAW+1)
 HWND global;
 int APIENTRY _tWinMain(_In_ HINSTANCE hInstance,
                      _In_opt_ HINSTANCE hPrevInstance,
@@ -239,6 +241,9 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 		// Parse the menu selections:
 		switch (wmId)
 		{
+		case IDD_README:
+			DialogBox(hInst, MAKEINTRESOURCE(IDD_DIALOG2), hWnd, About);
+			break;
 		case IDM_ABOUT:
 			DialogBox(hInst, MAKEINTRESOURCE(IDD_ABOUTBOX), hWnd, About);
 			break;
@@ -250,6 +255,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 			DialogBox(hInst, MAKEINTRESOURCE(IDD_DIALOG1), hWnd, getTotal);
 			remaining = total;
 			cQ[0] = cQ[1] = cQ[2] = 0;
+			q.clear();
 			q.push_back(list<myRect>());
 			q.push_back(list<myRect>());
 			q.push_back(list<myRect>());
@@ -260,11 +266,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 		}
 		case ID_END:
 		{
-			TerminateThread(stThread, 0);
-			stThread = NULL;
-			q.clear();
-			InvalidateRect(hWnd, 0, TRUE);
-			UpdateWindow(hWnd);
+			PostMessage(hWnd, WM_MYEND, 0, 0);
 			break;
 		}
 		default:
@@ -274,8 +276,6 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 	
 	case WM_CREATE:
 	{
-		
-		
 		global = hWnd;
 		//CreateThread(NULL, 1024, (LPTHREAD_START_ROUTINE)test, 0, 0, 0);
 			break;
@@ -286,81 +286,100 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 		UpdateWindow(hWnd);
 		break;
 	}
+	case WM_MYEND:
+	{
+		if (stThread != NULL)
+		{
+			TerminateThread(stThread, 0);
+			stThread = NULL;
+		}
+		q.clear();
+		
+		MessageBox(hWnd, L"Program has ended", L"", MB_OK);
+
+		InvalidateRect(hWnd, 0, TRUE);
+		UpdateWindow(hWnd);
+
+	}
 	case WM_PAINT:
 	{
-		if (stThread == NULL)
-		{
-			break;
-		}
+		
 		//InvalidateRect(hWnd, 0, TRUE);
 		//UpdateWindow(hWnd);
 		hdc = BeginPaint(hWnd, &ps);
-		// TODO: Add any drawing code here...
-		RECT rect;
-		GetClientRect(hWnd, &rect);
-		pair<int, int> Oxy((rect.right - rect.left) / 2, (rect.bottom - rect.top) / 2);
-
-		// paint background
-		RECT ori = calRect(rect, make_pair(0, 0));
-		ori.top -= 10;
-		ori.bottom += 10;
-		ori.left -= 10;
-		ori.right += 10;
-
-		MoveToEx(hdc, rect.left, ori.top, 0);
-		LineTo(hdc, ori.left, ori.top);
-		MoveToEx(hdc, ori.left, rect.top, 0);
-		LineTo(hdc, ori.left, ori.top);
-		MoveToEx(hdc, ori.right, ori.top, 0);
-		LineTo(hdc, rect.right, ori.top);
-		MoveToEx(hdc, ori.right, ori.top, 0);
-		LineTo(hdc, ori.right, rect.top);
-
-		MoveToEx(hdc, ori.left, ori.bottom, 0);
-		LineTo(hdc, rect.left, ori.bottom);
-		MoveToEx(hdc, ori.left, ori.bottom, 0);
-		LineTo(hdc, ori.left, rect.bottom);
-		MoveToEx(hdc, ori.right, ori.bottom, 0);
-		LineTo(hdc, rect.right, ori.bottom);
-		MoveToEx(hdc, ori.right, ori.bottom, 0);
-		LineTo(hdc, ori.right, rect.bottom);
-		//
-
-		//start to paint rect
-		int szRect, szBorder;
-		HGDIOBJ origin = SelectObject(hdc, GetStockObject(DC_PEN));
-		TCHAR s[30];
-	//	int remaining = total;
-		for (int i = 0; i < q.size(); ++i)
+		if (stThread != NULL)
 		{
-			if (i < q.size() - 1)
-			{
-				RECT r = calRect(rect, posCount[i]);
-				//_stprintf_p(s, 30, L"Line %d", i + 1);
-				//DrawText(hdc, s, lstrlen(s), &r, DT_BOTTOM | DT_CENTER | DT_SINGLELINE);
-				_stprintf_p(s, 30, L"Count = %d\nLine %d", cQ[i], i + 1);
-				DrawText(hdc, s, lstrlen(s), &r, DT_VCENTER | DT_CENTER);
-			}
-			//remaining -= cQ[i];
-			
-			for (list<myRect>::iterator it = q[i].begin(); it != q[i].end(); ++it)
-			{
+			RECT rect;
+			GetClientRect(hWnd, &rect);
+			pair<int, int> Oxy((rect.right - rect.left) / 2, (rect.bottom - rect.top) / 2);
 
-				SetDCPenColor(hdc, it->getColor());
-				RECT re = calRect(rect, it->getPosition());
-				Rectangle(hdc, re.left, re.top, re.right, re.bottom);
-				DrawText(hdc, nameList[it->getType()], 2, &re, DT_VCENTER | DT_CENTER | DT_SINGLELINE);
-				
+			// paint background
+			RECT ori = calRect(rect, make_pair(0, 0));
+			ori.top -= 10;
+			ori.bottom += 10;
+			ori.left -= 10;
+			ori.right += 10;
+
+			MoveToEx(hdc, rect.left, ori.top, 0);
+			LineTo(hdc, ori.left, ori.top);
+			MoveToEx(hdc, ori.left, rect.top, 0);
+			LineTo(hdc, ori.left, ori.top);
+			MoveToEx(hdc, ori.right, ori.top, 0);
+			LineTo(hdc, rect.right, ori.top);
+			MoveToEx(hdc, ori.right, ori.top, 0);
+			LineTo(hdc, ori.right, rect.top);
+
+			MoveToEx(hdc, ori.left, ori.bottom, 0);
+			LineTo(hdc, rect.left, ori.bottom);
+			MoveToEx(hdc, ori.left, ori.bottom, 0);
+			LineTo(hdc, ori.left, rect.bottom);
+			MoveToEx(hdc, ori.right, ori.bottom, 0);
+			LineTo(hdc, rect.right, ori.bottom);
+			MoveToEx(hdc, ori.right, ori.bottom, 0);
+			LineTo(hdc, ori.right, rect.bottom);
+			//
+
+			//start to paint rect
+			int szRect, szBorder;
+			HGDIOBJ origin = SelectObject(hdc, GetStockObject(DC_PEN));
+			TCHAR s[30];
+			//	int remaining = total;
+			for (int i = 0; i < q.size(); ++i)
+			{
+				if (i < q.size() - 1)
+				{
+					RECT r = calRect(rect, posCount[i]);
+					//_stprintf_p(s, 30, L"Line %d", i + 1);
+					//DrawText(hdc, s, lstrlen(s), &r, DT_BOTTOM | DT_CENTER | DT_SINGLELINE);
+					_stprintf_p(s, 30, L"LINE %d\n(Count = %d)", i + 1, cQ[i]);
+					SetTextColor(hdc, colorList[i]);
+					DrawText(hdc, s, lstrlen(s), &r, DT_VCENTER | DT_CENTER);
+				}
+				//remaining -= cQ[i];
+
+				for (list<myRect>::iterator it = q[i].begin(); it != q[i].end(); ++it)
+				{
+
+					SetDCPenColor(hdc, it->getColor());
+					RECT re = calRect(rect, it->getPosition());
+					Rectangle(hdc, re.left, re.top, re.right, re.bottom);
+					SetTextColor(hdc, RGB(0, 0, 0));
+					DrawText(hdc, nameList[it->getType()], 2, &re, DT_VCENTER | DT_CENTER | DT_SINGLELINE);
+
+				}
 			}
+
+			RECT r = calRect(rect, make_pair(-4, -1));
+			RECT sz;
+			SetTextColor(hdc, RGB(0, 0, 0));
+			_stprintf_p(s, 30, L"Total = %d\nRemaining = %d", total, remaining);
+			DrawText(hdc, s, lstrlen(s), &sz, DT_CALCRECT);
+			r.right = r.left + sz.right - sz.left;
+			r.bottom = r.top + sz.bottom - sz.top;
+			DrawText(hdc, s, lstrlen(s), &r, DT_VCENTER | DT_LEFT);
 		}
-
-		RECT r = calRect(rect, make_pair(-4, -1));
-		RECT sz;
-		_stprintf_p(s, 30, L"Total = %d\nRemaining = %d", total, remaining);
-		DrawText(hdc, s, lstrlen(s), &sz, DT_CALCRECT);
-		r.right = r.left + sz.right - sz.left;
-		r.bottom = r.top + sz.bottom - sz.top;
-		DrawText(hdc, s, lstrlen(s), &r, DT_VCENTER | DT_LEFT);
+		// TODO: Add any drawing code here...
+		
 		//
 		EndPaint(hWnd, &ps);
 	}
@@ -376,6 +395,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 }
 
 // Message handler for about box.
+
 INT_PTR CALLBACK About(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam)
 {
 	UNREFERENCED_PARAMETER(lParam);
@@ -430,6 +450,7 @@ void checkBox(LPVOID para)
 	PostMessage(global, WM_MYDRAW, 0, 0);
 	Sleep(1000);
 	ReleaseMutex(oriMutex);
+	
 	ExitThread(0);
 }
 void onStart(LPVOID para)
@@ -450,6 +471,7 @@ void onStart(LPVOID para)
 			q[q.size() - 1].push_back(temp);
 			--remaining;
 		}
+		
 		
 		for (int i = 0; i < q.size(); ++i)
 		{
@@ -496,7 +518,7 @@ void onStart(LPVOID para)
 	
 		isEnd = cc == 0;
 	}
-	
+	//PostMessage(global, WM_MYEND, 0, 0);
 	ExitThread(0);
 }
 
