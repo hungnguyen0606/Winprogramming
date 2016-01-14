@@ -4,6 +4,7 @@
 #include "stdafx.h"
 #include "ViewImage.h"
 #include <Shlobj.h>
+#include <cmath>
 #define MAX_LOADSTRING 100
 
 // Global Variables:
@@ -137,15 +138,18 @@ BOOL InitInstance(HINSTANCE hInstance, int nCmdShow)
 
    hInst = hInstance; // Store instance handle in our global variable
 
-   hWnd = CreateWindow(szWindowClass, szTitle, WS_OVERLAPPEDWINDOW,
-      CW_USEDEFAULT, 0, CW_USEDEFAULT, 0, NULL, NULL, hInstance, NULL);
-
+   //hWnd = CreateWindow(szWindowClass, szTitle, WS_OVERLAPPEDWINDOW | ,
+   //   CW_USEDEFAULT, 0, CW_USEDEFAULT, 0, NULL, NULL, hInstance, NULL);
+   hWnd = CreateWindow(szWindowClass, szTitle, WS_OVERLAPPED | WS_CAPTION | WS_SYSMENU ,
+	   CW_USEDEFAULT, 0, CW_USEDEFAULT, 0, NULL, NULL, hInstance, NULL);
+  // ws_max
    if (!hWnd)
    {
       return FALSE;
    }
 
-   ShowWindow(hWnd, nCmdShow);
+   //ShowWindow(hWnd, nCmdShow);
+   ShowWindow(hWnd, SW_MAXIMIZE);
    UpdateWindow(hWnd);
 
    return TRUE;
@@ -175,18 +179,27 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 		// Parse the menu selections:
 		switch (wmId)
 		{
-		case IDM_ABOUT:
+		/*case IDM_ABOUT:
 			DialogBox(hInst, MAKEINTRESOURCE(IDD_ABOUTBOX), hWnd, About);
-			break;
+			break;*/
 		case IDM_EXIT:
 			DestroyWindow(hWnd);
 			break;
 		case IDD_VIEWIMG:
 		{
-			lKq[0].index = 0;
-			lKq[1].index = 1;
-			CreateThread(NULL, 1024, (LPTHREAD_START_ROUTINE)viewImgThread, &lKq[0], 0, NULL);
-			CreateThread(NULL, 1024, (LPTHREAD_START_ROUTINE)viewImgThread, &lKq[1], 0, NULL);
+			for (int i = 0; i < 2; ++i)
+			{
+				lKq[i].index = i;
+				lKq[i].current = NULL;
+				lKq[i].fname[0] = lKq[i].path[0] = 0;
+				lKq[i]._Count = lKq[i].H = lKq[i].W = 0;
+				lKq[i].isReady = false;
+				
+			}
+			if (lstrlen(path1))
+				CreateThread(NULL, 1024, (LPTHREAD_START_ROUTINE)viewImgThread, &lKq[0], 0, NULL);
+			if (lstrlen(path2))
+				CreateThread(NULL, 1024, (LPTHREAD_START_ROUTINE)viewImgThread, &lKq[1], 0, NULL);
 			break;
 		}
 		case IDD_CHOOSE1:
@@ -238,6 +251,11 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 			return DefWindowProc(hWnd, message, wParam, lParam);
 		}
 		break;
+	case WM_SIZE:
+	{
+		ShowWindow(hWnd, SW_MAXIMIZE);
+		break;
+	}
 	case WM_MYDRAW:
 	{
 		InvalidateRect(hWnd, 0, TRUE);
@@ -388,7 +406,13 @@ void viewImgThread(LPVOID data)
 		}
 		else
 		{
-	
+			//load image
+			lstrcat(temp, L"\\");
+			lstrcat(temp, ffd.cFileName);
+			dat->current = (HBITMAP)LoadImage(hInst, temp, IMAGE_BITMAP, 0, 0, LR_LOADFROMFILE);
+			//
+			if (dat->current == NULL)
+				continue;
 
 			++dat->_Count;
 			int tW, tH;
@@ -398,12 +422,7 @@ void viewImgThread(LPVOID data)
 			_tprintf(TEXT("  %s   %ld bytes\n"), ffd.cFileName, filesize.QuadPart);
 			*/
 
-			//load image
-			lstrcat(temp, L"\\");
-			lstrcat(temp, ffd.cFileName);
-			dat->current = (HBITMAP)LoadImage(hInst, temp, IMAGE_BITMAP, 0, 0, LR_LOADFROMFILE);
-			//
-
+			
 			//undo lstrcat
 			temp[n] = 0;
 			//
@@ -425,6 +444,7 @@ void viewImgThread(LPVOID data)
 	} while (FindNextFile(hFind, &ffd) != 0);
 
 	dat->isReady = true;
+	dat->current = NULL;
 	PostMessage(global, WM_MYDRAW, 0, 0);
 	ExitThread(0);
 	
@@ -441,7 +461,7 @@ void getSizeBM(HBITMAP& img, int& W, int& H)
 void fitToWindow(HDC hdc, HBITMAP& img, RECT rect)
 {
 	rect.top += 10;
-	rect.bottom -= 10;
+	rect.bottom -= 20;
 	rect.left += 10;
 	rect.right -= 10;
 	int dx = rect.right - rect.left;
@@ -465,8 +485,8 @@ void fitToWindow(HDC hdc, HBITMAP& img, RECT rect)
 
 	RECT nImg;
 	nImg.left = nImg.top = 0;
-	nImg.right = bm.bmWidth*ratio;
-	nImg.bottom = bm.bmHeight*ratio;
+	nImg.right = std::floor(bm.bmWidth*ratio);
+	nImg.bottom = std::floor(bm.bmHeight*ratio);
 
 	//
 
