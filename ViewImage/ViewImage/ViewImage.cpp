@@ -56,6 +56,7 @@ myRESULT lKq[2];
 void fitToWindow(HDC hdc, HBITMAP& img, RECT rect);
 void viewImgThread(LPVOID data);
 void getSizeBM(HBITMAP& img, int& W, int& H);
+void setPos(HWND hWnd);
 int APIENTRY _tWinMain(_In_ HINSTANCE hInstance,
                      _In_opt_ HINSTANCE hPrevInstance,
                      _In_ LPTSTR    lpCmdLine,
@@ -140,7 +141,7 @@ BOOL InitInstance(HINSTANCE hInstance, int nCmdShow)
 
    //hWnd = CreateWindow(szWindowClass, szTitle, WS_OVERLAPPEDWINDOW | ,
    //   CW_USEDEFAULT, 0, CW_USEDEFAULT, 0, NULL, NULL, hInstance, NULL);
-   hWnd = CreateWindow(szWindowClass, szTitle, WS_OVERLAPPED | WS_CAPTION | WS_SYSMENU ,
+   hWnd = CreateWindow(szWindowClass, L"Quick Image Viewer", WS_OVERLAPPED | WS_MAXIMIZE | WS_CAPTION | WS_SYSMENU,
 	   CW_USEDEFAULT, 0, CW_USEDEFAULT, 0, NULL, NULL, hInstance, NULL);
   // ws_max
    if (!hWnd)
@@ -148,8 +149,8 @@ BOOL InitInstance(HINSTANCE hInstance, int nCmdShow)
       return FALSE;
    }
 
-   //ShowWindow(hWnd, nCmdShow);
-   ShowWindow(hWnd, SW_MAXIMIZE);
+   ShowWindow(hWnd, nCmdShow);
+   //ShowWindow(hWnd, SW_MAXIMIZE);
    UpdateWindow(hWnd);
 
    return TRUE;
@@ -253,7 +254,12 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 		break;
 	case WM_SIZE:
 	{
-		ShowWindow(hWnd, SW_MAXIMIZE);
+		setPos(hWnd);
+		break;
+	}
+	case WM_MOVE:
+	{
+		setPos(hWnd);
 		break;
 	}
 	case WM_MYDRAW:
@@ -343,6 +349,13 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 		global = hWnd;
 		path1[0] = 0;
 		path2[0] = 0;
+
+		RECT t;
+		
+		SystemParametersInfo(SPI_GETWORKAREA, 0, &t, 0);
+		int wid = t.right - t.left;
+		int hei = t.bottom - t.top;
+		SetWindowPos(hWnd, HWND_TOPMOST, 0, 0, wid, hei, SWP_SHOWWINDOW );
 		break;
 	}
 	case WM_DESTROY:
@@ -494,4 +507,13 @@ void fitToWindow(HDC hdc, HBITMAP& img, RECT rect)
 	SelectObject(memDC, hOldbmp);
 
 	DeleteDC(memDC);
+}
+
+void setPos(HWND hWnd)
+{
+	RECT t;
+	SystemParametersInfo(SPI_GETWORKAREA, 0, &t, 0);
+	int wid = t.right - t.left;
+	int hei = t.bottom - t.top;
+	SetWindowPos(hWnd, HWND_TOPMOST, 0, 0, wid, hei, SWP_SHOWWINDOW);
 }
